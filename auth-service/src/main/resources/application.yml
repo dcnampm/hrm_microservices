@@ -9,7 +9,7 @@ spring:
   application:
     name: auth-service
   datasource:
-    url: jdbc:mysql://localhost:3306/hrm
+    url: jdbc:mysql://localhost:3306/hrm_auth
     username: root
     password: nam.pd193034@
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -30,7 +30,6 @@ application:
     jwt:
       secret-key: 5d9bcee44a9f0549cf53d86206bf8d1e98c675ce843bab16685e9d1056e64633
       expiration: 86400000 # a day
-    refresh-token:
-      expiration: 604800000 # 7 days
-  config:
-    users-url: http://localhost:8080/api/v1/users
+#  config:
+#    user-url: http://localhost:8080/api/v1/business/user
+

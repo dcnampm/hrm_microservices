@@ -1,7 +1,6 @@
 package com.nampd.authservice.auth;
 
 import com.nampd.authservice.GenericResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,10 +19,5 @@ public class AuthenticationController {
             @RequestBody AuthenticationRequest authenticationRequest
     ) {
         return ResponseEntity.ok(new GenericResponse<>(authenticationService.authenticate(authenticationRequest)));
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<GenericResponse<AuthenticationResponse>> refreshToken(HttpServletRequest request) {
-        return ResponseEntity.ok(new GenericResponse<>(authenticationService.refreshToken(request)));
     }
 }

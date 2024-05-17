@@ -1,65 +1,39 @@
 package com.nampd.authservice.auth;
 
 import com.nampd.authservice.jwt.JwtService;
-import com.nampd.authservice.user.UserCredentials;
-import com.nampd.authservice.user.UserCredentialsClient;
-import jakarta.servlet.http.HttpServletRequest;
+import com.nampd.authservice.client.UserCredentials;
+import com.nampd.authservice.model.entity.Role;
+import com.nampd.authservice.service.RoleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserCredentialsClient userCredentialsClient;
-    private final AuthenticationManager authenticationManager;
+    private final RestTemplate restTemplate;
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleService roleService;
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        authenticationRequest.getUsername(),
-                        authenticationRequest.getPassword()
-                )
-        );
+        UserCredentials foundUser = restTemplate.getForObject("/users/auth-service/{email}", UserCredentials.class, authenticationRequest.getUsername());
+//        var foundUser = userCredentialsClient.findUserByEmail(authenticationRequest.getUsername());
 
-        var foundUser = userCredentialsClient.findUserByEmail(authenticationRequest.getUsername());
-        if (foundUser.isPresent()) {
-            UserCredentials user = foundUser.get();
-            var accessToken = jwtService.generateToken(user);
-            var refreshToken = jwtService.generateRefreshToken(user);
+        if (foundUser != null) {
+            if (passwordEncoder.matches(authenticationRequest.getPassword(), foundUser.getPassword())) {
 
-            return new AuthenticationResponse(accessToken, refreshToken);
-        } else {
-            throw new IllegalArgumentException("Invalid email or password");
-        }
-    }
-
-    public AuthenticationResponse refreshToken(HttpServletRequest request) {
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String username;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return null;
-        }
-        refreshToken = authHeader.substring(7);
-        username = jwtService.extractUsername(refreshToken);
-
-        if (username != null) {
-
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-            if (jwtService.isTokenValid(refreshToken, userDetails)) {
-                var accessToken = jwtService.generateToken(userDetails);
-                var newRefreshToken = jwtService.generateRefreshToken(userDetails);
-                return new AuthenticationResponse(accessToken, newRefreshToken);
+                var accessToken = jwtService.generateToken(foundUser);
+                return new AuthenticationResponse(accessToken);
+            } else {
+                throw new IllegalArgumentException("Wrong password");
             }
+        } else {
+            throw new IllegalArgumentException("User does not exist");
         }
-        return null;
     }
 }
+
+
