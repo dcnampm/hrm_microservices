@@ -2,20 +2,23 @@ package com.nampd.controller;
 
 import com.nampd.model.GenericResponse;
 import com.nampd.model.dto.DepartmentDto;
+import com.nampd.model.dto.UserCredentialsDto;
 import com.nampd.model.entity.Department;
-import com.nampd.model.entity.Role;
+import com.nampd.client.RoleVO;
 import com.nampd.service.DepartmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/departments")
+@RequestMapping("/api/v1/business/departments")
 public class DepartmentController {
     private final DepartmentService departmentService;
 
@@ -41,13 +44,11 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GenericResponse<DepartmentDto>> getDepartmentByID(@PathVariable(name = "id") Long departmentId) {
+    public DepartmentDto getDepartmentByID(@PathVariable(name = "id") Long departmentId) {
         try {
-            DepartmentDto departmentDto = departmentService.getDepartmentById(departmentId);
-            return ResponseEntity.ok(new GenericResponse<>(departmentDto));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new GenericResponse<>(null, 400, "Failed to get department: " + e.getMessage(), false));
+            return departmentService.getDepartmentById(departmentId);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to get user: " + e.getMessage());
         }
     }
 
@@ -84,16 +85,4 @@ public class DepartmentController {
             return ResponseEntity.internalServerError().body(new GenericResponse<>(null, 500, "Failed to delete department: " + e.getMessage(), false));
         }
     }
-
-    @Operation(
-            summary = "Retrieve roles in department",
-            description = "Get all roles in a department by specifying department's id. The response is a list of roles with id and name"
-    )
-    @GetMapping("/roles/{departmentId}")
-    public ResponseEntity<GenericResponse<List<Role>>> getRolesInDepartmentById(@PathVariable(name = "departmentId") Long departmentId) {
-        List<Role> roles = departmentService.getRolesInDepartment(departmentId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new GenericResponse<>(roles));
-    }
-
 }

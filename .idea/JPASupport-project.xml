@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoGeneratorSettingsState">
+    <option name="ignoredFields">
+      <set>
+        <option value="" />
+      </set>
+    </option>
+    <option name="moduleName" value="auth-service" />
+    <option name="moduleNameToSettings">
+      <map>
+        <entry key="auth-service">
+          <value>
+            <ModuleSettings>
+              <option name="controllerPackageName" value="com.nampd.authservice.controller" />
+              <option name="controllerParentDirectory" value="$PROJECT_DIR$/auth-service/src/main/java" />
+              <option name="dtoParentDirectory" value="$PROJECT_DIR$/auth-service/src/main/java" />
+              <option name="entityPackageName" value="com.nampd.authservice.model" />
+              <option name="entityParentDirectory" value="$PROJECT_DIR$/auth-service/src/main/java" />
+              <option name="mapperXmlParentDirectory" value="$PROJECT_DIR$/auth-service/src/main/resources" />
+              <option name="repositoryPackageName" value="com.nampd.authservice.repository" />
+              <option name="repositoryParentDirectory" value="$PROJECT_DIR$/auth-service/src/main/java" />
+              <option name="servicePackageName" value="com.nampd.authservice.service" />
+              <option name="serviceParentDirectory" value="$PROJECT_DIR$/auth-service/src/main/java" />
+              <option name="voParentDirectory" value="$PROJECT_DIR$/auth-service/src/main/java" />
+            </ModuleSettings>
+          </value>
+        </entry>
+        <entry key="hrm_microservices">
+          <value>
+            <ModuleSettings />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="useJakartaEE" value="true" />
+  </component>
+  <component name="DatabaseSettingsState">
+    <option name="language" value="vi-VN" />
+  </component>
+</project>
