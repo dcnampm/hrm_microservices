@@ -2,7 +2,7 @@ package com.nampd.service;
 
 import com.nampd.model.dto.DepartmentDto;
 import com.nampd.model.entity.Department;
-import com.nampd.model.entity.Role;
+import com.nampd.client.RoleVO;
 //import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
@@ -20,6 +20,4 @@ public interface DepartmentService {
     DepartmentDto updateDepartment(Long id, Department department);
 //    @PreAuthorize("hasAnyAuthority(\"DEPARTMENT.DELETE\") or hasAnyRole('ROLE_TPNS')")
     void deleteDepartment(Long id);
-//    @PreAuthorize("hasAnyAuthority(\"DEPARTMENT.READ\") or hasAnyRole('ROLE_TPNS')")
-    List<Role> getRolesInDepartment(Long departmentId);
 }

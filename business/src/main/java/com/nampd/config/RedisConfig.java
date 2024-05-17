@@ -25,18 +25,6 @@
 //    @Value("${spring.data.redis.port}")
 //    private int redisPort;
 //
-////    @Cacheable: kết quả của phương thức được lưu vào cache.
-////    Spring kiểm tra cache trước khi thực thi phương thức. Nếu đã tồn tại trong cache, kết quả được trả về từ cache
-////    thường được sử dụng cho các phương thức đọc dữ liệu từ csdl
-////
-////    @CacheEvict: khi phương thức được gọi, các mục trong cache tương ứng sẽ được xóa
-////    các mục trong cache sẽ được xóa trước khi phương thức được thực thi
-////    thường được sử dụng cho các phương thức thay đổi dữ liệu hoặc khi cần làm sạch cache để cập nhật dữ liệu mới.
-////
-////    @CachePut: kết quả của phương thức được cập nhật hoặc thêm vào cache
-////    kết quả của phương thức sẽ được lưu vào cache ngay sau khi phương thức được thực thi, ngay cả khi kết quả đã tồn tại trong cache trước đó.
-////    thường được sử dụng khi cần đảm bảo rằng kết quả của một phương thức sẽ luôn được cập nhật trong cache, bất kể kết quả đã tồn tại hay không.
-//
 //    //    @Caching allows multiple nested @Cacheable, @CachePut and @CacheEvict to be used on the same method
 //    @Bean
 //    public LettuceConnectionFactory redisConnectionFactory() {

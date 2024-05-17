@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -16,7 +17,7 @@ import java.util.List;
                 @UniqueConstraint(columnNames = {"alias"}, name = "alias_unique"),
         }
 )
-public class Department implements Serializable {
+public class Department implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -31,8 +32,4 @@ public class Department implements Serializable {
     @OneToMany(mappedBy = "department", targetEntity = User.class, cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<User> users;
-
-    @OneToMany(mappedBy = "department", targetEntity = Role.class, orphanRemoval = true, cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<Role> roles;
 }

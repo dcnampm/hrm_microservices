@@ -4,14 +4,14 @@ import com.nampd.mapper.UserMapper;
 import com.nampd.model.dto.UserCredentialsDto;
 import com.nampd.model.dto.UserDto;
 import com.nampd.model.entity.Department;
-import com.nampd.model.entity.Role;
+import com.nampd.client.RoleVO;
 import com.nampd.model.entity.User;
 import com.nampd.repository.DepartmentRepository;
-import com.nampd.repository.RoleRepository;
 import com.nampd.repository.UserRepository;
 import com.nampd.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -21,17 +21,17 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+    private final RestTemplate restTemplate;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, DepartmentRepository departmentRepository, PasswordEncoder passwordEncoder, UserMapper userMapper, RestTemplate restTemplate) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.departmentRepository = departmentRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -94,6 +94,7 @@ public class UserServiceImpl implements UserService {
         existingUser.setAddress(updatedUser.getAddress());
         existingUser.setPhone(updatedUser.getPhone());
         existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setPassword(updatedUser.getPassword());
 
         String encodedPassword = passwordEncoder.encode(updatedUser.getPassword());
         existingUser.setPassword(encodedPassword);
@@ -111,17 +112,25 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     @Override
-    public void assignRoleAndDepartmentToUser(String username, String roleName, Long departmentId) {
+    public void assignRoleAndDepartmentToUser(String username, String role, Long departmentId) {
+        RoleVO roleVO = restTemplate.getForObject("/roles/{roleName}", RoleVO.class, role);
+
         Optional<User> foundUser = userRepository.findByEmail(username);
-        Role role = roleRepository.findByName(roleName);
         Department department = departmentRepository.findById(departmentId).orElse(null);
 
-        if (foundUser.isPresent() && role != null && department != null) {
-            User user = foundUser.get();
-            user.setRole(role);
-            user.setDepartment(department);
-            userRepository.save(user);
+        if (foundUser.isPresent() && roleVO != null && department != null) {
+            if (roleVO.getDepartment().equals(department.getName())) {
+                User user = foundUser.get();
+                user.setRole(roleVO.getName());
+                user.setDepartment(department);
+                userRepository.save(user);
+            } else {
+                throw new IllegalArgumentException("Role does not belong to the specified department");
+            }
+        } else {
+            throw new NoSuchElementException("User, role, or department not found");
         }
     }
 

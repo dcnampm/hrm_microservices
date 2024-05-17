@@ -48,9 +48,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne(targetEntity = Role.class)
-    @JoinColumn(name = "role_id")
-    private Role role;
+    private String role;
 
     @ManyToOne(targetEntity = Department.class)
     @JoinColumn(name = "department_id")

@@ -3,7 +3,7 @@ package com.nampd.service.impl;
 import com.nampd.mapper.DepartmentMapper;
 import com.nampd.model.dto.DepartmentDto;
 import com.nampd.model.entity.Department;
-import com.nampd.model.entity.Role;
+import com.nampd.client.RoleVO;
 import com.nampd.repository.DepartmentRepository;
 import com.nampd.service.DepartmentService;
 import org.springframework.stereotype.Service;
@@ -80,14 +80,4 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
     }
 
-    @Override
-    public List<Role> getRolesInDepartment(Long departmentId) {
-        Optional<Department> existingDepartment = departmentRepository.findById(departmentId);
-        if (existingDepartment.isPresent()) {
-            Department department = existingDepartment.get();
-            return department.getRoles();
-        } else {
-            throw new NoSuchElementException("Department not found");
-        }
-    }
 }

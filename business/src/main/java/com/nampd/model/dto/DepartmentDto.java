@@ -11,5 +11,4 @@ public class DepartmentDto implements Serializable {
     private final String name;
     private final String alias;
     private final Set<UserDto> users;
-
 }

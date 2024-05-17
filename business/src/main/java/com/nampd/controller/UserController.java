@@ -9,12 +9,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("/api/v1/business/users")
 public class UserController {
     private final UserService userService;
 
@@ -52,15 +53,14 @@ public class UserController {
     }
 
     @GetMapping("/auth-service/{email}")
-    public ResponseEntity<GenericResponse<UserCredentialsDto>> getUserByEmail(@PathVariable(name = "email") String email) {
+    public UserCredentialsDto getUserByEmail(@PathVariable(name = "email") String email) {
         try {
-            UserCredentialsDto userCredentialsDto = userService.getUserByEmail(email);
-            return ResponseEntity.ok(new GenericResponse<>(userCredentialsDto));
+            return userService.getUserByEmail(email);
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new GenericResponse<>(null, 400, "Failed to get user: " + e.getMessage(), false));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to get user: " + e.getMessage());
         }
     }
+
 
     @GetMapping("/search/{firstName}")
     public ResponseEntity<GenericResponse<List<UserDto>>> getUserByFirstName(@PathVariable String firstName) {
@@ -98,9 +98,9 @@ public class UserController {
     )
     @PutMapping("/assignRole/{username}")
     public ResponseEntity<String> assignRoleToUser(@PathVariable String username,
-                                                   @RequestParam String roleName,
+                                                   @RequestParam String role,
                                                    @RequestParam Long departmentId) {
-        userService.assignRoleAndDepartmentToUser(username, roleName, departmentId);
+        userService.assignRoleAndDepartmentToUser(username, role, departmentId);
         return ResponseEntity.ok("Assigning user to department and assigning role to user " + username + " successfully");
     }
 
